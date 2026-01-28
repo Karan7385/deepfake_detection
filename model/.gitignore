@@ -1,0 +1,33 @@
+# ----------------------------------------------------------------------
+# Folders and Files to Ignore
+# ----------------------------------------------------------------------
+
+# 1. Python Artifacts
+# Bytecode and compiled files
+__pycache__/
+*.pyc
+
+# 2. Dataset (Typically large and should not be version controlled directly)
+# Assuming 'dataset' folder contains the raw or processed data
+# You might want to remove this line if your dataset is very small and essential.
+dataset/
+
+# 4. Environment/Dependency Management
+# Virtual environment folders
+.venv
+venv/
+env/
+
+# Dependency files created by some package managers
+# If you use Poetry or Conda, you might have specific files to ignore here.
+# For pip:
+# requirements.txt is usually tracked, but lock files might be ignored
+# if they are generated on the fly. We'll keep requirements.txt for tracking.
+
+# 5. Editor and OS Specific Files
+# VS Code (The editor shown in the image)
+.vscode/
+
+# Operating System files
+.DS_Store
+Thumbs.db
