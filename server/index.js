@@ -8,7 +8,7 @@ const axios = require("axios");
 // --- 1. Configuration and Constants ---
 const PORT = process.env.PORT || 3000;
 const IMAGE_API_URL = "http://127.0.0.1:8000/predict_image";
-const VIDEO_API_URL = "http://0.0.0.0:8080/predict_video";
+const VIDEO_API_URL = "http://127.0.0.1:8080/predict_video/";
 const uploadDir = path.join(__dirname, "uploads");
 
 // --- 2. Custom Error Class ---
@@ -55,27 +55,57 @@ async function callImageService(filePath) {
     }
 }
 
+const FormData = require("form-data");
+
 async function callVideoService(filePath) {
+
     try {
-        const response = await axios.post(
-            VIDEO_API_URL,
-            { file_path: filePath },
-            { headers: { "Content-Type": "application/json" } }
+
+        const form = new FormData();
+
+        form.append(
+            "file",
+            fs.createReadStream(filePath)
         );
+
+        const response = await axios.post(
+
+            VIDEO_API_URL,
+            form,
+            {
+                headers: form.getHeaders()
+            }
+
+        );
+
         return response.data;
-    } catch (error) {
-        // Handle network errors (Axios error with no response)
-        if (!error.response) {
-            throw new ApiError(`Connection error: Could not reach Python service at ${VIDEO_API_URL}`, 503);
+
+    }
+    catch(error){
+
+        if(!error.response){
+
+            throw new ApiError(
+                `Connection error: Could not reach Python service`,
+                503
+            );
+
         }
 
-        // Handle errors returned from the Python server (HTTP status code >= 400)
         const status = error.response.status;
-        const detail = error.response.data?.detail || error.response.data?.error || "Unknown error from prediction service.";
 
-        console.error(`Python API returned ${status}: ${detail}`);
-        throw new ApiError(`Prediction failed: ${detail}`, status);
+        const detail =
+        error.response.data?.detail ||
+        error.response.data?.error ||
+        "Unknown error";
+
+        throw new ApiError(
+            `Prediction failed: ${detail}`,
+            status
+        );
+
     }
+
 }
 
 /**
